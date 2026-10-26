@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>큐베이스·누엔도 15 위키</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: 어두운 트랜스포트 밴드(상·하단 배너) 사이에 위키 2단 — 왼쪽 검색+목차, 오른쪽 본문. 모바일은 목차가 서랍으로 접힘 */
+:root{
+  --bg:#eef2f1; --surface:#fbfcfc; --ink:#152021; --muted:#56676a; --line:#cfd9d8;
+  --band:#122022; --band-ink:#eef6f4; --band-dim:#8fa6a4;
+  --sfx:#b8531a; --sfx-soft:#f7e5d8; --midi:#1d7770; --midi-soft:#d6ece9;
+  --warn:#7d5300; --warn-soft:#fbefd0; --key:#ffffff; --key-edge:#b4c1c0; --mark:#fff1a8;
+  --f-display:"Black Han Sans","IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+  --side-w:300px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1516; --surface:#142022; --ink:#e2ebe9; --muted:#93a5a5; --line:#26393a;
+  --band:#081011; --band-ink:#eef6f4; --band-dim:#7f9795;
+  --sfx:#f08c4c; --sfx-soft:#3a2416; --midi:#52c2b8; --midi-soft:#12302d;
+  --warn:#f0c264; --warn-soft:#32280f; --key:#1d2c2e; --key-edge:#060c0d; --mark:#5b4a10;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1516; --surface:#142022; --ink:#e2ebe9; --muted:#93a5a5; --line:#26393a;
+  --band:#081011; --band-ink:#eef6f4; --band-dim:#7f9795;
+  --sfx:#f08c4c; --sfx-soft:#3a2416; --midi:#52c2b8; --midi-soft:#12302d;
+  --warn:#f0c264; --warn-soft:#32280f; --key:#1d2c2e; --key-edge:#060c0d; --mark:#5b4a10;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.75;word-break:keep-all;overflow-wrap:anywhere}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--midi);outline-offset:2px;border-radius:4px}
+
+/* ── 배너 ── */
+.banner{background:var(--band);color:var(--band-ink)}
+.banner-in{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 22px;display:grid;gap:14px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--band-dim)}
+.banner h1,.banner .foot-title{font-family:var(--f-display);font-weight:400;font-size:clamp(30px,7.2vw,76px);line-height:1.08;margin:0;text-wrap:balance;letter-spacing:-.01em}
+.banner h1 .acc{color:var(--sfx)}
+.banner .sub{font-size:clamp(15px,2.2vw,19px);color:var(--band-ink);opacity:.92;margin:0}
+.ruler{height:26px;border-top:1px solid #2c4446;position:relative;
+  background:
+   repeating-linear-gradient(90deg,#4b6668 0 1px,transparent 1px 100%) 0 0/calc(100%/16) 100% no-repeat,
+   repeating-linear-gradient(90deg,#4b6668 0 1px,transparent 1px calc(100%/16)) 0 0/100% 9px no-repeat,
+   repeating-linear-gradient(90deg,#2f4749 0 1px,transparent 1px calc(100%/64)) 0 0/100% 5px no-repeat}
+.ruler span{position:absolute;top:8px;font-family:var(--f-mono);font-size:10px;color:var(--band-dim)}
+.lanes{display:grid;grid-template-columns:repeat(16,1fr);gap:3px}
+.lanes i{height:8px;border-radius:2px;background:#203436}
+.lanes i.s{background:var(--sfx)} .lanes i.m{background:#3fa69d}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-family:var(--f-mono);font-size:12.5px;color:var(--band-dim)}
+.meta b{color:var(--band-ink);font-weight:600}
+
+/* ── 모바일 상단 바 ── */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.mbar{display:none;position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--surface);border-bottom:1px solid var(--line)}
+.mbar-in{padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));padding-block:8px;display:flex;align-items:center;gap:10px}
+.mbar .title{font-weight:700;font-size:14px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 12px;font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--muted)}
+
+.os{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg)}
+.os button{border:0;background:transparent;padding:5px 11px;font-size:13px;font-family:var(--f-mono)}
+.os button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+
+/* ── 본문 셸 ── */
+.shell{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;grid-template-columns:var(--side-w) minmax(0,1fr);gap:40px;align-items:start}
+.side{position:sticky;top:0;max-height:100vh;overflow:auto;padding-block:24px 40px;display:grid;gap:14px;align-content:start}
+.side-head{display:grid;gap:10px}
+.search{position:relative}
+.search input{width:100%;font:inherit;font-size:15px;padding:10px 36px 10px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+.search input:focus{outline:none;border-color:var(--midi)}
+.search .clr{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:transparent;font-size:18px;color:var(--muted);padding:2px 8px}
+.side-row{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--muted)}
+.hint{font-size:12.5px;color:var(--muted);margin:0}
+
+.toc{list-style:none;margin:0;padding:0;font-size:14px;line-height:1.45}
+.toc .part{margin-top:14px;padding:6px 0 4px;font-weight:700;font-size:13px;letter-spacing:.02em;border-top:1px solid var(--line)}
+.toc .part:first-child{margin-top:0}
+.toc .part.sfx{color:var(--sfx)} .toc .part.midi{color:var(--midi)}
+.toc a{display:flex;gap:8px;padding:5px 8px;border-radius:6px;text-decoration:none;color:var(--ink)}
+.toc a .n{font-family:var(--f-mono);font-size:12px;color:var(--muted);min-width:2.6em;padding-top:1px}
+.toc a:hover{background:var(--surface)}
+.toc a.on{background:var(--surface);box-shadow:inset 2px 0 0 var(--ink);font-weight:500}
+
+.results{display:grid;gap:4px}
+.results .cnt{font-size:12.5px;color:var(--muted);margin-bottom:4px}
+.res{display:block;text-align:left;border:1px solid transparent;background:transparent;border-radius:8px;padding:8px 10px;width:100%}
+.res:hover,.res:focus-visible{background:var(--surface);border-color:var(--line)}
+.res .rt{font-weight:500;font-size:14px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.res .rp{font-size:11px;font-family:var(--f-mono);padding:0 6px;border-radius:4px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.res .rs{font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:2px}
+.res mark{background:var(--mark);color:inherit;border-radius:2px}
+.empty{font-size:14px;color:var(--muted);padding:8px}
+
+main{padding-block:28px 64px;min-width:0;max-width:820px}
+.part-head{margin:56px 0 8px;padding:22px 22px 20px;border-radius:14px;display:grid;gap:6px}
+.part-head:first-child{margin-top:0}
+.part-head.common{background:var(--surface);border:1px solid var(--line)}
+.part-head.sfx{background:var(--sfx-soft)}
+.part-head.midi{background:var(--midi-soft)}
+.part-head .tag{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+.part-head.sfx .tag{color:var(--sfx)} .part-head.midi .tag{color:var(--midi)} .part-head.common .tag{color:var(--muted)}
+.part-head h2{font-family:var(--f-display);font-weight:400;font-size:clamp(26px,4vw,36px);line-height:1.2;margin:0;text-wrap:balance}
+.part-head p{margin:0;max-width:62ch}
+
+.sec{padding-top:34px}
+.sec h3{font-size:clamp(19px,2.6vw,22px);line-height:1.4;margin:0 0 10px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;text-wrap:balance}
+.sec h3 .n{font-family:var(--f-mono);font-size:14px;font-weight:600;color:var(--muted)}
+.sec[data-part="sfx"] h3 .n{color:var(--sfx)} .sec[data-part="midi"] h3 .n{color:var(--midi)}
+.sec p{margin:0 0 12px;max-width:68ch}
+.sec ul,.sec ol{margin:0 0 14px;padding-left:1.25em;max-width:68ch}
+.sec li{margin:3px 0}
+.sec h4{font-size:15.5px;margin:18px 0 6px}
+.flash{animation:flash 1.6s ease-out}
+@keyframes flash{0%{background:var(--mark)}100%{background:transparent}}
+
+.ed{display:inline-block;font-family:var(--f-mono);font-size:11.5px;font-weight:600;padding:1px 7px;border-radius:5px;border:1px solid var(--line);background:var(--surface);color:var(--muted);vertical-align:2px;line-height:1.6;white-space:nowrap}
+.ed.pro{color:var(--ink);border-color:var(--ink)}
+.ed.nu{color:var(--sfx);border-color:var(--sfx)}
+.ed.ver{color:var(--midi);border-color:var(--midi)}
+.unsure{display:inline-block;font-size:12px;font-weight:700;padding:1px 7px;border-radius:5px;background:var(--warn-soft);color:var(--warn);vertical-align:1px;white-space:nowrap}
+
+.note{border-radius:10px;padding:12px 14px;margin:0 0 14px;font-size:15px;max-width:68ch;background:var(--surface);border:1px solid var(--line)}
+.note b.lb{display:block;font-size:13px;margin-bottom:2px}
+.note.tip b.lb{color:var(--midi)} .note.warn{background:var(--warn-soft);border-color:transparent} .note.warn b.lb{color:var(--warn)}
+.note p:last-child{margin-bottom:0}
+
+.dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 16px;margin:0 0 14px;font-size:15px;max-width:68ch}
+.dl dt{font-weight:700}
+.dl dd{margin:0;min-width:0}
+
+/* 단축키 표 */
+.kt{overflow-x:auto;margin:6px 0 18px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.kt table{border-collapse:collapse;width:100%;font-size:15px}
+.kt th{font-size:12px;text-align:left;color:var(--muted);font-weight:500;letter-spacing:.04em;padding:9px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+.kt td{padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+.kt tr:last-child td{border-bottom:0}
+.kt td.k{white-space:nowrap;width:1%}
+.kt td .sm{display:block;font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:2px}
+kbd{font-family:var(--f-mono);font-size:12.5px;font-weight:600;display:inline-block;min-width:1.9em;text-align:center;padding:2px 7px;margin:1px 0;border-radius:6px;background:var(--key);border:1px solid var(--key-edge);border-bottom-width:3px;color:var(--ink);line-height:1.5}
+.plus{color:var(--muted);font-size:12px;margin:0 3px}
+.or{color:var(--muted);font-size:12px;margin:0 6px}
+
+.src{font-size:13.5px;color:var(--muted)}
+.src ol{padding-left:1.3em}
+.src a{word-break:break-all}
+
+.overlay{display:none}
+
+@media (max-width:920px){
+  .mbar{display:block}
+  html{scroll-padding-top:70px}
+  .shell{grid-template-columns:minmax(0,1fr);gap:0}
+  .side{position:fixed;z-index:50;top:0;left:0;bottom:0;width:min(86vw,340px);max-height:none;background:var(--bg);
+    padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));
+    padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:16px;
+    transform:translateX(-102%);transition:transform .22s ease;box-shadow:0 0 0 1px var(--line)}
+  .side.open{transform:none}
+  .overlay{position:fixed;inset:0;z-index:40;background:rgba(5,10,10,.45)}
+  .overlay.open{display:block}
+  .side .close{display:inline-flex}
+  main{padding-top:18px}
+  .part-head{padding:18px 16px}
+  .kt td,.kt th{padding:8px 10px}
+  .dl{grid-template-columns:minmax(0,1fr)} .dl dt{margin-top:6px}
+}
+.side .close{display:none}
+</style>
+</head>
+<body>
+
+
+<header class="banner" id="top">
+  <div class="banner-in">
+    <div class="eyebrow">M9 ACADEMY · STUDENT HANDOUT · DAW</div>
+    <h1>엠나인아카데미<br>수강생용 <span class="acc">학습자료</span></h1>
+    <p class="sub">큐베이스 15 Pro · 누엔도 15 기능과 단축키 위키 ― 사운드디자인(SFX) 파트와 미디 작곡 파트</p>
+    <div class="ruler" aria-hidden="true"><span style="left:0">1</span><span style="left:25%">5</span><span style="left:50%">9</span><span style="left:75%">13</span></div>
+    <div class="lanes" aria-hidden="true"><i class="s"></i><i class="s"></i><i></i><i class="s"></i><i></i><i></i><i class="s"></i><i class="s"></i><i class="m"></i><i class="m"></i><i class="m"></i><i></i><i class="m"></i><i class="m"></i><i></i><i class="m"></i></div>
+    <div class="meta"><span>기준 <b>Cubase Pro 15.0.30</b></span><span><b>Nuendo 15.0.30</b></span><span>정리 <b>2026.10.26</b></span></div>
+  </div>
+</header>
+
+<div class="mbar">
+  <div class="mbar-in">
+    <button class="btn" id="openSide" aria-controls="side" aria-expanded="false">☰ 목차·검색</button>
+    <span class="title" id="mbarTitle">큐베이스·누엔도 15 위키</span>
+    <div class="os" role="group" aria-label="운영체제">
+      <button data-os="win" aria-pressed="true">Win</button><button data-os="mac" aria-pressed="false">Mac</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="overlay"></div>
+
+<div class="shell">
+  <aside class="side" id="side" aria-label="목차와 검색">
+    <div class="side-head">
+      <div class="side-row"><strong style="color:var(--ink);font-size:14px">검색</strong><button class="btn close" id="closeSide">닫기 ✕</button></div>
+      <div class="search">
+        <input id="q" type="search" placeholder="기능, 단축키, 메뉴 이름…" autocomplete="off" aria-label="학습자료 검색">
+        <button class="clr" id="clr" aria-label="검색어 지우기" hidden>×</button>
+      </div>
+      <p class="hint">예) 스템, 모듈레이터, 퀀타이즈, Ctrl+D, F7</p>
+      <div class="side-row"><span>단축키 표시</span>
+        <div class="os" role="group" aria-label="운영체제">
+          <button data-os="win" aria-pressed="true">Windows</button><button data-os="mac" aria-pressed="false">macOS</button>
+        </div>
+      </div>
+    </div>
+    <div class="results" id="results" hidden></div>
+    <ul class="toc" id="toc"></ul>
+  </aside>
+
+  <main id="main">
+
+<!-- ═════════ 공통 ═════════ -->
+<div class="part-head common" id="common" data-parthead="common">
+  <span class="tag">Part 0 · 공통</span>
+  <h2>시작 전에 꼭 보세요</h2>
+  <p>SFX 및 미디작곡 분야를 위한 자료입니다. 버전 정보, 15에서 바뀐 화면, 매일 손에 붙어야 하는 기본 단축키를 모았어요.</p>
+</div>
+
+<section class="sec" id="howto" data-part="common">
+  <h3><span class="n">0.1</span>자료를 활용하는 법</h3>
+  <p>여러분, 이 페이지는 처음부터 끝까지 읽는 교재라기보다 작업하다 막힐 때 찾아보는 사전에 가까워요. 왼쪽(모바일은 위쪽 ☰ 버튼) 검색창에 기능 이름이나 단축키를 치면 해당 항목으로 바로 이동합니다.</p>
+  <ul>
+    <li><span class="ed pro">Pro</span> <span class="ed">Artist</span> <span class="ed">Elements</span> 표시는 그 기능이 들어 있는 큐베이스 에디션이에요. <span class="ed nu">Nuendo</span>는 누엔도에만 있는 기능입니다.</li>
+    <li><span class="ed ver">15.0.20</span>처럼 붙은 건 그 업데이트에서 추가됐다는 뜻이에요. 학원 PC든 집 PC든 업데이트가 안 돼 있으면 메뉴가 안 보일 수 있어요.</li>
+    <li><span class="unsure">확실하지 않음</span>이 붙은 건 제가 공식 자료로 끝까지 확인하지 못한 내용이에요. 그대로 믿지 말고 프로그램에서 직접 확인해 보세요.</li>
+    <li>단축키는 오른쪽 위 <b>Win / Mac</b> 버튼으로 바꿔 볼 수 있어요. 윈도우의 Ctrl이 맥에서는 Cmd, Alt는 Option이 됩니다.</li>
+  </ul>
+</section>
+
+<section class="sec" id="version" data-part="common">
+  <h3><span class="n">0.2</span>버전 정보와 업데이트 흐름</h3>
+  <p>큐베이스 15는 2025년 11월 5일에 나왔고, 누엔도 15는 2026년 3월 31일에 나왔어요. 둘 다 이후 유지보수 업데이트가 몇 번 있었는데, 15.0.20은 이름만 유지보수지 새 기능이 꽤 많이 추가됐어요.</p>
+  <dl class="dl">
+    <dt>Cubase 15.0</dt><dd>2025.11.05 출시. 스템 분리, 새 익스프레션 맵, 멜로딕 패턴, 모듈레이터 6종, UltraShaper, PitchShifter, Omnivocal(베타) 등</dd>
+    <dt>Cubase 15.0.20</dt><dd>2026.04.01. 폴더 트랙 그룹 채널, WaveLab Go(ARA), 패턴 에디터 스텝 선택 툴, 오토메이션 복사·붙여넣기, 비디오 내보내기 개선 등</dd>
+    <dt>Cubase 15.0.21</dt><dd>15.0.20에서 생긴 문제를 고친 버그 수정판</dd>
+    <dt>Cubase 15.0.30</dt><dd>2026.06.03. Celemony Tonalic Essential 무료 제공(Pro·Artist), 각종 수정</dd>
+    <dt>Nuendo 15.0</dt><dd>2026.03.31 출시. 큐베이스 15의 음악·사운드디자인 신기능 전부 + 애널라이저 트랙, 새 오토메이션, Convert Channels, MXF 가져오기 등</dd>
+    <dt>Nuendo 15.0.30</dt><dd>2026.06. Tonalic Essential(ARA) 포함</dd>
+  </dl>
+  <div class="note warn"><b class="lb">버전 업 시기</b><p>큐베이스는 14가 2024년 11월, 15가 2025년 11월에 나왔어요. 그래서 16이 다음 달쯤 나올 수도 있다고 보는데, 이건 추측입니다. 2026년 10월 26일 기준으로 공식 발표는 확인하지 못했어요.</p></div>
+</section>
+
+<section class="sec" id="cubase-vs-nuendo" data-part="common">
+  <h3><span class="n">0.3</span>큐베이스와 누엔도, 뭐가 달라요?</h3>
+  <p>둘은 같은 엔진 위에 만든 형제 프로그램이에요. 누엔도 15는 큐베이스 15에 들어간 사운드디자인·음악 기능(스템 분리, 새 익스프레션 맵, DAWproject 지원, UltraShaper, PitchShifter, 모듈레이터, Omnivocal, 패턴 시퀀서 등)을 그대로 포함하고, 여기에 영상 후반작업과 게임 오디오용 기능을 더 얹은 구조예요.</p>
+  <ul>
+    <li><b>작곡반</b>은 큐베이스 Pro면 충분해요. 익스프레션 맵, 스코어 에디터, 코드 패드 같은 음악 기능은 둘이 같거든요.</li>
+    <li><b>SFX반</b>은 큐베이스로 시작해도 되지만, 영상 싱크·대사·멀티채널 납품까지 다루는 회사는 누엔도를 쓰는 경우가 있어요. 단축키 체계가 거의 같아서 큐베이스에서 손에 익힌 게 그대로 넘어갑니다.</li>
+  </ul>
+  <dl class="dl">
+    <dt>출시 가격(미국 기준)</dt><dd>Cubase Pro 15 $579.99 · Artist 15 $329.99 · Elements 15 $99.99 · Nuendo 15 $999.99. 국내 가격과 할인은 시기마다 달라서 구매 전에 다시 확인하세요.</dd>
+  </dl>
+</section>
+
+<section class="sec" id="ui-changes" data-part="common">
+  <h3><span class="n">0.4</span>15에서 바뀐 화면과 작업 환경</h3>
+  <h4>허브(Hub) 새 디자인 <span class="ed">전 에디션</span></h4>
+  <p>프로그램을 실행하면 나타나는 시작 창이 바뀌었어요. 창 크기를 조절할 수 있고, 프로젝트 미리보기와 검색·필터가 들어갔어요. 자주 쓰는 폴더를 섹션으로 추가할 수 있어서 “과제용”, “포트폴리오용”처럼 나눠 두면 편해요. 오디오 드라이버와 메인 스테레오 출력도 허브에서 바로 고를 수 있어요.</p>
+  <h4>트랙 헤더에 볼륨·팬 <span class="ed">전 에디션</span></h4>
+  <p>믹스콘솔을 열지 않고 트랙 리스트에서 바로 볼륨과 팬을 조절할 수 있어요. 트랙 컨트롤 설정에서 표시를 켜야 보입니다. 15.0.20부터는 트랙 높이를 줄였을 때 값 상자 형태로도 표시돼요.</p>
+  <h4>폴더 색 자동 적용</h4>
+  <p>폴더 트랙에 색을 주면 안에 있는 트랙들에도 같은 색이 자동으로 적용돼요. 예전처럼 따로 색을 쓰고 싶으면 환경설정의 <b>Event Display &gt; Folders &gt; Apply Colour of Folder Track Automatically</b>를 Never로 바꾸면 돼요.</p>
+  <h4>화면 크기·확대</h4>
+  <ul>
+    <li>기본 이펙트 플러그인 전부 UI 크기 조절 가능</li>
+    <li>맥에서도 Application Scaling 지원, 재시작 없이 바로 적용 (환경설정 User Interface 페이지)</li>
+    <li>맥 전체 화면 모드, 트랙패드 핀치 줌 지원</li>
+    <li>오디오 설정을 모은 Audio Settings 창 추가</li>
+  </ul>
+</section>
+
+<section class="sec" id="keys-transport" data-part="common">
+  <h3><span class="n">0.5</span>필수 단축키 ① 트랜스포트·녹음</h3>
+  <p>넘패드(숫자 키패드)에 트랜스포트가 배치돼 있어요. 노트북처럼 넘패드가 없는 키보드라면 외장 넘패드를 하나 쓰거나 키 명령에서 다른 키로 옮겨 두세요.</p>
+  <div class="kt" data-set="transport"></div>
+</section>
+
+<section class="sec" id="keys-tools" data-part="common">
+  <h3><span class="n">0.6</span>필수 단축키 ② 툴 (숫자 1~0)</h3>
+  <p>툴바에 놓인 순서 그대로 숫자 키에 지정돼 있어요. 이름이 아니라 손가락 위치로 외우는 게 빨라요.</p>
+  <div class="kt" data-set="tools"></div>
+</section>
+
+<section class="sec" id="keys-edit" data-part="common">
+  <h3><span class="n">0.7</span>필수 단축키 ③ 편집·선택</h3>
+  <div class="kt" data-set="edit"></div>
+</section>
+
+<section class="sec" id="keys-zoom" data-part="common">
+  <h3><span class="n">0.8</span>필수 단축키 ④ 줌·이동·마커</h3>
+  <p>G·H(줌 아웃·인), B·N(이전·다음 이벤트), I·O(펀치 인·아웃)처럼 짝이 되는 기능이 옆자리 키에 있어요.</p>
+  <div class="kt" data-set="zoom"></div>
+</section>
+
+<section class="sec" id="keys-window" data-part="common">
+  <h3><span class="n">0.9</span>필수 단축키 ⑤ 창·파일·워크스페이스</h3>
+  <p>F 키 줄에는 창을 여는 기능이 모여 있어요. F3 믹스콘솔, F7 다이렉트 오프라인 프로세싱 정도는 오늘 바로 외워 두세요.</p>
+  <div class="kt" data-set="window"></div>
+</section>
+
+<section class="sec" id="keys-custom" data-part="common">
+  <h3><span class="n">0.10</span>단축키 바꾸기와 안 먹힐 때</h3>
+  <p>단축키는 <b>Edit(편집) &gt; Key Commands(키 명령)</b>에서 바꿔요. 검색창에 기능 이름을 치고, 원하는 키를 누른 뒤 Assign을 누르면 지정이 완료돼요. 이미 다른 기능에 쓰이는 키면 어떤 기능에 지정돼 있는지 알려 줍니다. 여러 동작을 한 번에 실행하는 매크로도 같은 창에서 만들 수 있어요.</p>
+  <div class="note tip"><b class="lb">단축키가 갑자기 안 될 때</b><p>대부분 온스크린 키보드가 켜져 있는 경우예요. 컴퓨터 키보드로 건반을 치는 모드라서 글자·숫자 키 입력을 모두 가로채요. <kbd class="k-alt">Alt</kbd><span class="plus">+</span><kbd>K</kbd>로 끄세요. 그래도 안 되면 다른 컴퓨터에서 가져온 키 명령 프리셋이 기존 설정을 덮어쓴 경우이므로, 키 명령 창에서 기본값으로 되돌리면 돼요.</p></div>
+  <div class="note warn"><b class="lb">이 표의 출처와 한계</b><p>위 단축키 표는 큐베이스 15 기본 키 명령을 정리한 Editors Keys 자료를 바탕으로 했고, 제가 아는 기본값과 맞춰 봤어요. 다만 스타인버그 공식 목록과 한 줄씩 대조한 건 아니라서, 표에 <span class="unsure">확실하지 않음</span>이 붙은 줄은 꼭 키 명령 창에서 확인하세요. 누엔도 기본 키는 큐베이스와 대부분 같지만 일부 다를 수 있어요(확실하지 않음). 누엔도 전용 기능(ADR 패널, 애널라이저 트랙 등)의 기본 단축키는 알 수 없습니다.</p></div>
+</section>
+
+<!-- ═════════ SFX ═════════ -->
+<div class="part-head sfx" id="sfx" data-parthead="sfx">
+  <span class="tag">Part A · Sound Design</span>
+  <h2>SFX · 사운드디자인 파트</h2>
+  <p>오디오를 자르고, 겹치고, 변형하는 작업 위주로 정리했어요. 큐베이스 15 신기능과 누엔도 15 전용 기능이 함께 있어요.</p>
+</div>
+
+<section class="sec" id="stem" data-part="sfx">
+  <h3><span class="n">A.1</span>스템 분리 (Stem Separation) <span class="ed pro">Pro</span> <span class="ed nu">Nuendo</span></h3>
+  <p>믹스된 오디오 한 덩어리를 AI로 최대 4개 스템, 즉 보컬·드럼·베이스·나머지로 나눠 주는 기능이에요. 이벤트를 선택하고 <b>Audio 메뉴 &gt; Separate Stems</b>로 창을 엽니다. 원하는 스템만 골라서 추출할 수 있고, 두세 개만 골랐을 때는 하나의 파일로 합쳐서 받을 수도 있어요.</p>
+  <ul>
+    <li>기본 단축키는 없고, 프로젝트 창 우클릭 메뉴에도 15.0 기준으로는 없었어요. 자주 쓸 거면 키 명령에서 직접 붙이세요.</li>
+    <li>SFX반에서는 레퍼런스 분석용으로 좋아요. 게임 트레일러 사운드에서 음악을 빼고 효과음 레이어만 들어 보는 식으로요.</li>
+    <li>리뷰에서는 분리 품질이 다른 전용 툴보다 약간 아쉽다는 평가가 있었어요(Sound On Sound). 포트폴리오 결과물에 그대로 쓰기보다는 분석·연습 용도로 생각하세요.</li>
+  </ul>
+  <div class="note warn"><b class="lb">저작권</b><p>남의 음원에서 뽑은 스템을 여러분 포트폴리오에 넣으면 안 돼요. 분석은 자유롭게, 결과물은 직접 만든 소리로.</p></div>
+</section>
+
+<section class="sec" id="modulators" data-part="sfx">
+  <h3><span class="n">A.2</span>모듈레이터 6종 추가 <span class="ed pro">Pro</span> <span class="ed nu">Nuendo</span></h3>
+  <p>큐베이스 14에서 처음 들어온 모듈레이터에 15에서 6개가 더 추가됐어요. 플러그인 파라미터나 트랙 볼륨·팬에 LFO나 엔벨로프를 걸어서 움직이게 만드는 기능이라, 사운드디자인에서 소리를 “살아 있게” 만들 때 유용해요.</p>
+  <dl class="dl">
+    <dt>Random</dt><dd>무작위 신호 생성기. 여러 알고리즘 모델이 있고, 그중 하나가 펄린 노이즈(Perlin) 방식이에요. 자연스럽게 출렁이는 움직임에 좋아요.</dd>
+    <dt>Wavefold LFO</dt><dd>사인~삼각파 사이 모양을 만들고, 일정 값을 넘으면 파형을 접어서(fold) 복잡한 움직임을 만들어요.</dd>
+    <dt>Attack Decay</dt><dd>어택은 고정, 디케이 시간과 곡선만 조절하는 간단한 엔벨로프예요.</dd>
+    <dt>Sample &amp; Hold</dt><dd>입력 값을 일정 시간(음표 길이 또는 Hz)마다 잡아서 계단식으로 유지해요. 다른 오디오 트랙을 사이드체인 입력으로 쓸 수 있어요.</dd>
+    <dt>Morph LFO</dt><dd>내장 오실레이터 두 개를 섞어 하나의 모듈레이션으로 만들어요.</dd>
+    <dt>Crossfader</dt><dd>입력 두 개를 섞는데, 그 입력에 다른 모듈레이터 출력을 연결할 수 있어요. 모듈레이터끼리 조합하는 핵심 부품이에요.</dd>
+  </dl>
+  <div class="note tip"><b class="lb">실습 아이디어</b><p>엔진 루프에 PitchShifter를 걸고 Random(펄린) 모듈레이터로 피치를 아주 조금만 흔들어 보세요. 같은 루프를 오래 들어도 덜 기계적으로 들려요.</p></div>
+  <p><b>알아 둘 한계</b>: 모듈레이터는 아직 MIDI 트랙에는 못 쓰고, 같은 트랙(채널) 안의 대상만 직접 연결할 수 있어요. 15부터는 트랙 뮤트도 모듈레이션 대상이 됩니다.</p>
+</section>
+
+<section class="sec" id="ultrashaper" data-part="sfx">
+  <h3><span class="n">A.3</span>UltraShaper <span class="ed pro">Pro</span> <span class="ed nu">Nuendo</span></h3>
+  <p>트랜지언트 셰이핑, 클립 리미팅, EQ를 한 플러그인에 묶은 다이내믹 프로세서예요. 타격음·총성·발소리처럼 어택이 중요한 소리를 다듬을 때 먼저 적용해 보세요. 어택을 세우고, 튀는 피크는 클립 리미터로 잡고, EQ로 마무리하는 흐름을 한 창에서 끝낼 수 있어요.</p>
+</section>
+
+<section class="sec" id="pitchshifter" data-part="sfx">
+  <h3><span class="n">A.4</span>PitchShifter <span class="ed pro">Pro</span> <span class="ed">Artist</span> <span class="ed nu">Nuendo</span></h3>
+  <p>실시간 피치 시프터예요. ±24반음 범위, 포먼트 조절, 새추레이션 모드, 좌우 채널을 따로 움직이는 스테레오 언링크를 지원해요.</p>
+  <ul>
+    <li>몬스터·크리처 보이스: 피치를 내리고 포먼트는 따로 조절해서 “덩치”를 바꿔 보세요.</li>
+    <li>스테레오 언링크로 좌우 피치를 아주 살짝 다르게 주면 공간감이 생겨요.</li>
+    <li>모듈레이터(A.2)와 같이 쓰면 움직이는 피치 효과를 오토메이션 없이 만들 수 있어요.</li>
+  </ul>
+</section>
+
+<section class="sec" id="wavelab-go" data-part="sfx">
+  <h3><span class="n">A.5</span>WaveLab Go (ARA) <span class="ed pro">Pro</span> <span class="ed">Artist</span> <span class="ed ver">15.0.20</span> <span class="ed nu">Nuendo</span></h3>
+  <p>WaveLab의 편집·복구·분석 도구를 큐베이스 안에서 ARA 확장으로 쓸 수 있게 한 기능이에요. 노이즈 정리나 클릭 제거처럼 SFX 소스를 다듬는 작업을 프로젝트를 벗어나지 않고 할 수 있어요.</p>
+  <div class="note warn"><b class="lb">설치 주의</b><p>큐베이스를 업데이트해도 자동으로 설치되지 않아요. Steinberg Download Assistant에서 Cubase 15 아래 Tools 쪽에서 별도로 내려받아야 한다는 사용자 안내가 있었어요. 메뉴에 안 보이면 여기부터 확인하세요.</p></div>
+</section>
+
+<section class="sec" id="dop" data-part="sfx">
+  <h3><span class="n">A.6</span>다이렉트 오프라인 프로세싱 (F7)</h3>
+  <p>오디오 이벤트에 이펙트를 렌더링해서 적용하되, 나중에 되돌리거나 수정할 수 있는 방식이에요. 리버스, 노멀라이즈, 피치 변경, 플러그인 적용을 이벤트 단위로 쌓을 수 있어서 SFX 레이어 작업의 기본 도구예요. <kbd>F7</kbd>로 창을 엽니다.</p>
+  <p>15.0.30 업데이트에서 이 흐름이 개선됐다는 소개가 있는데, 구체적으로 무엇이 바뀌었는지는 제가 확인하지 못했어요 <span class="unsure">확실하지 않음</span>. 공식 릴리스 노트를 같이 보세요.</p>
+</section>
+
+<section class="sec" id="quick-export" data-part="sfx">
+  <h3><span class="n">A.7</span>퀵 오디오 익스포트 (Quick Audio Export)</h3>
+  <p>스테레오 믹스를 빠르게 내보내는 기능이에요. 범위는 이벤트 위치(리버브 꼬리 포함)로 자동으로 잡히고, 고를 건 형식뿐이에요.</p>
+  <dl class="dl">
+    <dt>WAV</dt><dd>24비트, 프로젝트 샘플레이트 그대로</dd>
+    <dt>MP3</dt><dd>256kbps, 44.1kHz</dd>
+  </dl>
+  <p>피드백 받을 때 중간 결과물을 빨리 공유하는 용도로 쓰세요. 실제 납품용 SFX는 파일명, 샘플레이트, 채널, 개별 이벤트 단위 내보내기 같은 걸 맞춰야 하니까 기존 <b>Export Audio Mixdown</b> 창에서 설정해서 내보내는 게 맞아요.</p>
+</section>
+
+<section class="sec" id="folder-group" data-part="sfx">
+  <h3><span class="n">A.8</span>폴더 트랙 그룹 채널 <span class="ed ver">15.0.20</span> <span class="ed nu">Nuendo</span></h3>
+  <p>폴더 트랙에 합산용 그룹 채널을 추가할 수 있게 됐어요. 폴더 안 트랙은 자동으로 그 그룹으로 라우팅돼요. “발소리”, “무기”, “UI” 폴더를 만들고 폴더 단위로 볼륨·이펙트를 걸면, 정리와 서브믹스가 한 번에 됩니다. 사용자들이 오래 요청하던 기능이에요.</p>
+  <p>큐베이스에서 어느 에디션까지 들어가는지는 릴리스 노트에 따로 적혀 있지 않았어요 <span class="unsure">확실하지 않음</span>. 같은 업데이트에서 Pro는 FX 트랙 최대 개수가 256개로 늘었어요.</p>
+</section>
+
+<section class="sec" id="automation" data-part="sfx">
+  <h3><span class="n">A.9</span>오토메이션 개선</h3>
+  <h4>15.0 <span class="ed">전 에디션</span></h4>
+  <p>오토메이션 팝업이 파라미터 메뉴와 명령 메뉴로 나뉘었어요. 파라미터 메뉴는 검색이 되고, 최근에 쓴 파라미터 5개를 위에 보여 줘요. 마지막으로 만진 파라미터를 바로 잡을 수 있어서 클릭이 많이 줄어요. 폴더와 오토메이션 트랙은 들여쓰기 색으로 소속이 보이게 바뀌었어요.</p>
+  <h4>15.0.20 <span class="ed pro">Pro</span></h4>
+  <ul>
+    <li>트랙 사이 오토메이션 복사·붙여넣기, 선택한 파라미터만 옮기기</li>
+    <li>Auto-Latch와 Cross-Over 흐름 정리 (트랙별 또는 전체 펀치 아웃이 쉬워짐)</li>
+    <li>오토메이션 패널 세로 레이아웃, 프로젝트·믹스콘솔 라이트 존 탭으로 표시</li>
+    <li>스케일 툴로 오토메이션을 위아래로 옮길 때 절대값과 상대값을 같이 표시</li>
+  </ul>
+</section>
+
+<section class="sec" id="nuendo15" data-part="sfx">
+  <h3><span class="n">A.10</span>누엔도 15 전용 기능 <span class="ed nu">Nuendo</span></h3>
+  <p>게임·영상 사운드 쪽으로 가려는 분들은 이 항목을 따로 봐 두세요. 아래는 누엔도 15 발표 자료 기준이에요.</p>
+  <dl class="dl">
+    <dt>Analyzer Track</dt><dd>대사 명료도를 측정해서 트랙에 색으로 보여 줘요. 프라운호퍼 IDMT 기술 기반이고, 실시간 분석과 오프라인 분석을 모두 지원하며 임계값을 방송사 기준에 맞게 조절할 수 있어요.</dd>
+    <dt>새 오토메이션</dt><dd>필름 믹싱 오토메이션에 공간을 덜 차지하는 세로 보기 추가. 플러그인 컨트롤을 만지면 그 파라미터가 선택되고, 오토메이션 복사·붙여넣기, Latch 모드에서 트랙별 펀치 아웃, 상태 표시 개선</dd>
+    <dt>Convert Channels</dt><dd>트랙 레이아웃에 맞춰 파일을 자동으로 쪼개거나 합쳐요. 서라운드 클립을 모노 스템으로 나누거나, 모노 두 개를 스테레오로 묶는 반복 작업을 줄여 줘요.</dd>
+    <dt>MXF·ADM 가져오기</dt><dd>OP1a 컨테이너의 MXF 영상·오디오 직접 가져오기(AVC Intra 50/100/200, MPEG-2), ADM 메타데이터 가져오기</dd>
+    <dt>비디오 내보내기</dt><dd>해상도·인코딩 프리셋, 소프트웨어·GPU 인코딩, 마커 트랙의 텍스트를 영상에 새겨 넣기(타임코드, ADR 정보 등)</dd>
+    <dt>ADR 패널</dt><dd>구조와 화면 배치를 새로 정리</dd>
+    <dt>그 밖에</dt><dd>새 허브, 폴더 트랙 그룹 채널, 트랙 헤더 볼륨·팬, Headphones Match 보정 곡선 추가, SuperVision 색 테마, 퀵 익스포트</dd>
+  </dl>
+  <div class="note"><b class="lb">게임 오디오 미들웨어 연동</b><p>누엔도에는 예전 버전부터 Wwise와 연결하는 Game Audio Connect 기능이 있었어요. 15에서 이 기능이 어떻게 바뀌었는지는 이번에 확인하지 못했어요 <span class="unsure">확실하지 않음</span>.</p></div>
+</section>
+
+<section class="sec" id="sfx-keys" data-part="sfx">
+  <h3><span class="n">A.11</span>SFX 작업에서 자주 쓰는 단축키</h3>
+  <p>레이어를 자르고 붙이고 페이드 거는 작업은 손이 마우스보다 빨라야 해요. 아래 키는 첫 달 안에 손에 붙이는 걸 목표로 하세요.</p>
+  <div class="kt" data-set="sfx"></div>
+</section>
+
+<section class="sec" id="sfx-practice" data-part="sfx">
+  <h3><span class="n">A.12</span>신기능 익히는 연습 순서</h3>
+  <ol>
+    <li>짧은 게임 플레이 영상 하나를 골라 사운드를 전부 지우고, 폴더 트랙을 “캐릭터 / 무기 / 환경 / UI”로 나눠 그룹 채널을 켭니다.</li>
+    <li>타격음 하나를 만들 때 UltraShaper로 어택만 바꾼 버전 3개를 비교해 봅니다.</li>
+    <li>크리처 소리 하나를 PitchShifter + 모듈레이터로 만들고, 오토메이션 없이 움직임을 준 버전과 오토메이션으로 그린 버전을 비교합니다.</li>
+    <li>F7 다이렉트 오프라인 프로세싱으로 처리 이력을 쌓고, 중간 단계로 되돌려 보는 연습을 합니다.</li>
+    <li>퀵 익스포트로 피드백용 파일을, Export Audio Mixdown으로 납품용 파일을 각각 내보내 차이를 확인합니다.</li>
+  </ol>
+</section>
+
+<!-- ═════════ MIDI ═════════ -->
+<div class="part-head midi" id="midi" data-parthead="midi">
+  <span class="tag">Part B · MIDI Composition</span>
+  <h2>미디 작곡 파트</h2>
+  <p>가상악기를 입력하고, 아티큘레이션을 다루고, 악보까지 정리하는 작업 위주예요. 오케스트라 목업을 하는 분들은 B.1부터 보세요.</p>
+</div>
+
+<section class="sec" id="expression-maps" data-part="midi">
+  <h3><span class="n">B.1</span>새 익스프레션 맵 <span class="ed pro">Pro</span> <span class="ed nu">Nuendo</span></h3>
+  <p>익스프레션 맵은 큐베이스 5(2009년)에 들어온 뒤로 거의 그대로였는데, 15에서 크게 바뀌었어요. 도리코(Dorico)의 방식을 많이 참고했어요.</p>
+  <ul>
+    <li>예전엔 번호가 붙은 그룹 4개뿐이었는데, 이제 <b>이름 붙인 그룹을 개수 제한 없이</b> 만들 수 있어요.</li>
+    <li><b>Add-On Sound Slot</b>이 생겼어요. 레가토·스타카토 같은 기본 주법 위에 업보우·다운보우 같은 보조 주법을 얹는 개념이에요.</li>
+    <li>키 에디터의 아티큘레이션 레인이 그룹별로 정리되고, 그룹을 한 줄로 접을 수 있어요.</li>
+    <li>타임라인의 어느 지점에서 어떤 슬롯이 켜져 있는지 보여 주는 Sound Slots 레인을 키 에디터에 띄울 수 있어요.</li>
+    <li>아티큘레이션마다 어택 보정(attack compensation)을 따로 줄 수 있다는 소개가 있어요. 레가토 패치처럼 소리가 늦게 나오는 주법을 앞당기는 용도예요.</li>
+    <li>도리코의 익스프레션 맵을 끌어다 놓아 가져올 수 있지만, 15.0 기준으로는 한 그룹 안의 슬롯만 가져와지는 등 제한이 있어요.</li>
+  </ul>
+  <div class="note tip"><b class="lb">쓰기 전에</b><p>설정 창이 예전처럼 다른 창 위에 떠 있는 플로팅 창이 아니라서, 작업 중에 다른 창에 가려지는 경우가 있어요. 당황하지 말고 창 메뉴에서 다시 불러오세요.</p></div>
+</section>
+
+<section class="sec" id="pattern" data-part="midi">
+  <h3><span class="n">B.2</span>패턴 에디터 멜로딕 모드 <span class="ed pro">Pro</span> <span class="ed">Artist</span></h3>
+  <p>14에서 드럼용으로 들어온 패턴 에디터에 15부터 <b>Melodic Mode</b>가 생겼어요. 베이스라인, 아르페지오, 리드 시퀀스를 스텝 방식으로 입력할 수 있어요.</p>
+  <ul>
+    <li>모노포닉·폴리포닉 둘 다 가능</li>
+    <li>루트 음과 스케일을 정하면 그 스케일 음만 레인에 보여요. D 하모닉 마이너로 정하면 그 음들만 남는 식이에요.</li>
+    <li><b>Shapes</b>로 오르내리는 윤곽을 자동 생성하고, <b>Randomization</b>으로 조건에 맞춘 랜덤 패턴을 만들어요.</li>
+    <li><b>Variation</b>은 복잡도를 바꾸고, <b>Density</b>는 노트를 비파괴로 솎아 내요.</li>
+    <li>스케일을 정해 둔 상태에서 루트만 바꾸면 패턴이 음악적으로 조옮김돼요.</li>
+    <li>스텝 에디터에서 클릭한 채로 위아래로 끌면 파라미터 값이 바뀌어요.</li>
+    <li>패턴 이벤트를 드럼·샘플러·인스트루먼트·MIDI 트랙 사이로 옮길 수 있어요. 단, 한 트랙에 드럼 모드 패턴과 멜로딕 모드 패턴을 섞을 수는 없어요.</li>
+  </ul>
+  <h4>15.0.20 추가: Step Selection 툴 <span class="ed ver">15.0.20</span></h4>
+  <p>스텝을 선택해서 잘라내기·복사·붙여넣기, 복제, 이동, 분할, 타이, 레가토 전환을 할 수 있게 됐어요. 올가미 선택, 조옮김, 랜덤화, 하모니 보이스도 지원해요. 이 툴에서 <kbd class="k-alt">Alt</kbd>를 누르고 있으면 잠깐 드로우 툴로 바뀌어요.</p>
+</section>
+
+<section class="sec" id="omnivocal" data-part="midi">
+  <h3><span class="n">B.3</span>Omnivocal (베타) <span class="ed">전 에디션</span></h3>
+  <p>야마하 기술 기반 보컬 합성 엔진이에요. 키 에디터에 노트와 가사를 입력하면 노래로 합성해 줘요. 아직 베타라서 최종 결과물보다는 가이드 보컬, 멜로디 확인, 임시 대사(temp) 용도로 생각하세요.</p>
+  <h4>Omnivocal 1.2.5 <span class="ed ver">15.0.20</span></h4>
+  <dl class="dl">
+    <dt>비브라토</dt><dd>Auto / Manual 모드 선택</dd>
+    <dt>MIDI CC 제어</dt><dd>CC11 = Power, CC1 = Vibrato(Manual), CC7 = Output</dd>
+    <dt>스타일</dt><dd>Clean 스타일 추가, 기본 가사 전환이 쉬워짐</dd>
+  </dl>
+  <p>모드휠(CC1)로 비브라토를 그리는 건 현악기 다이내믹 그리는 것과 손이 비슷해서 금방 익숙해질 거예요.</p>
+</section>
+
+<section class="sec" id="chord-pads" data-part="midi">
+  <h3><span class="n">B.4</span>코드 패드 프리셋 <span class="ed">전 에디션</span></h3>
+  <p>15.0에서 코드 패드 프리셋 30개가 새로 추가됐고, 15.0.20에서 스케일 기반 프리셋 7개가 더 추가됐어요. Dorian, Phrygian, Lydian, Mixolydian, Locrian, Major(Ionian), Natural Minor(Aeolian)예요.</p>
+  <div class="note tip"><b class="lb">게임 음악에서</b><p>모드 프리셋은 분위기 잡기 연습에 좋아요. 같은 멜로디를 Dorian과 Phrygian 패드 위에서 각각 쳐 보고, 어떤 장면에 어울리는지 메모해 보세요.</p></div>
+</section>
+
+<section class="sec" id="instruments" data-part="midi">
+  <h3><span class="n">B.5</span>악기와 사운드 콘텐츠</h3>
+  <dl class="dl">
+    <dt>Drum Machine 킷 40종 <span class="ed pro">Pro</span> <span class="ed">Artist</span></dt><dd>힙합, 트랩, 일렉트로닉 계열 킷</dd>
+    <dt>Groove Agent SE 6</dt><dd>UI 크기 조절, 새 믹서, 이펙트 개선</dd>
+    <dt>Writing Room Synths</dt><dd>빈티지 신스 계열 리드·베이스·패드 모음</dd>
+    <dt>루프·샘플 팩</dt><dd>장르별 새 루프 팩</dd>
+    <dt>Padshop · Retrologue <span class="ed ver">15.0.20</span></dt><dd>창 크기를 자유롭게 조절 가능</dd>
+    <dt>MediaBay <span class="ed ver">15.0.20</span></dt><dd>도킹 가능. 샘플러 트랙에서 MediaBay 핫스왑으로 샘플을 바로 교체</dd>
+  </dl>
+</section>
+
+<section class="sec" id="tonalic" data-part="midi">
+  <h3><span class="n">B.6</span>Celemony Tonalic Essential <span class="ed pro">Pro</span> <span class="ed">Artist</span> <span class="ed ver">15.0.30</span> <span class="ed nu">Nuendo</span></h3>
+  <p>멜로다인을 만든 셀레모니의 Tonalic을 무료로 쓸 수 있게 됐어요. 실제 연주자(Uwe Bossert)의 어쿠스틱·일렉트릭 기타 연주를 곡의 코드, 템포, 그루브에 맞게 바꿔 주는 방식이에요. ARA로 들어가 있어서 설치하면 프로젝트 창 라이트 존에 탭이 추가돼요.</p>
+  <ol>
+    <li>큐베이스(또는 누엔도)를 15.0.30 이상으로 업데이트</li>
+    <li>MySteinberg 계정의 Voucher(바우처) 메뉴에서 라이선스 확인</li>
+    <li>셀레모니 계정 등록 후 Tonalic 설치</li>
+    <li>큐베이스 라이트 존의 Tonalic 탭에서 로그인</li>
+  </ol>
+  <p>Elements 에디션은 대상이 아니에요.</p>
+</section>
+
+<section class="sec" id="score" data-part="midi">
+  <h3><span class="n">B.7</span>스코어 에디터 <span class="ed ver">15.0.20</span></h3>
+  <ul>
+    <li>표기 스타일별 코드 심볼 표시 프리셋</li>
+    <li>연주한 노트를 스윙으로 해석해서 악보에 표시</li>
+    <li>사용자 지정 기타 튜닝, 전체·부분 카포 지원 (도리코 프로젝트와 호환)</li>
+  </ul>
+  <p>스코어 에디터는 <kbd class="k-ctrl">Ctrl</kbd><span class="plus">+</span><kbd>R</kbd>로 열어요.</p>
+</section>
+
+<section class="sec" id="dawproject" data-part="midi">
+  <h3><span class="n">B.8</span>DAWproject 형식 지원</h3>
+  <p>DAWproject는 서로 다른 DAW끼리 프로젝트 구조를 유지한 채 주고받기 위한 공개 형식이에요. 큐베이스 15, 누엔도 15, Cubasis를 비롯해 이 형식을 지원하는 다른 DAW와 프로젝트를 주고받을 수 있어요. 팀 과제에서 다른 DAW를 쓰는 친구와 협업할 때 써 보세요. 다만 모든 설정이 100% 옮겨지는 건 아니니 옮긴 뒤 꼭 들어 보고 확인하세요.</p>
+</section>
+
+<section class="sec" id="midi-keys" data-part="midi">
+  <h3><span class="n">B.9</span>미디 작업에서 자주 쓰는 단축키</h3>
+  <p>키 에디터 안에서는 방향키 의미가 바뀌어요. 위·아래 방향키가 선택한 노트를 반음씩 옮기고, Shift를 같이 누르면 옥타브 단위로 옮겨요.</p>
+  <div class="kt" data-set="midi"></div>
+</section>
+
+<section class="sec" id="midi-practice" data-part="midi">
+  <h3><span class="n">B.10</span>신기능 익히는 연습 순서</h3>
+  <ol>
+    <li>현악 라이브러리 하나로 새 익스프레션 맵을 직접 만들어 봅니다. 기본 주법 그룹 하나, 보잉 방향 Add-On 하나로 시작하세요.</li>
+    <li>짧은 전투 BGM 루프(8마디)를 만들면서 베이스라인을 패턴 에디터 멜로딕 모드로 찍어 봅니다.</li>
+    <li>같은 루프에 코드 패드 모드 프리셋을 바꿔 가며 분위기 차이를 비교합니다.</li>
+    <li>Omnivocal로 메인 멜로디 가이드 보컬을 넣고, CC1로 비브라토를 그려 봅니다.</li>
+    <li>완성한 루프의 리드 파트를 스코어 에디터로 열어 악보를 정리합니다.</li>
+  </ol>
+</section>
+
+<!-- ═════════ 출처 ═════════ -->
+<section class="sec src" id="sources" data-part="common">
+  <h3><span class="n">※</span>참고한 자료</h3>
+  <p>기능 설명은 아래 자료를 바탕으로 제가 다시 정리했어요. 메뉴 이름이나 세부 동작이 다르면 프로그램과 스타인버그 공식 매뉴얼이 기준입니다.</p>
+  <ol>
+    <li><a href="https://www.soundonsound.com/reviews/steinberg-cubase-pro-15" target="_blank" rel="noopener">Sound On Sound, Steinberg Cubase Pro 15 리뷰 (2025.12)</a></li>
+    <li><a href="https://blog.dubspot.com/steinberg-cubase-15-release" target="_blank" rel="noopener">Dubspot, Cubase 15 출시 정리 (2025.11)</a></li>
+    <li><a href="https://www.attackmagazine.com/news/cubase-15-released-heres-whats-new/" target="_blank" rel="noopener">Attack Magazine, Cubase 15 released</a></li>
+    <li><a href="https://vi-control.net/community/threads/cubase-15-20-update.171269/" target="_blank" rel="noopener">VI-Control, Cubase 15.0.20 릴리스 노트 인용 (2026.04)</a></li>
+    <li><a href="https://forums.steinberg.net/t/cubase-15-0-30-maintenance-update/1033959" target="_blank" rel="noopener">Steinberg Forums, Cubase 15.0.30 Maintenance Update (2026.06)</a></li>
+    <li><a href="https://www.kvraudio.com/news/steinberg-releases-nuendo-15-66542" target="_blank" rel="noopener">KVR Audio, Steinberg releases Nuendo 15 (2026.03)</a></li>
+    <li><a href="https://www.kvraudio.com/news/67198" target="_blank" rel="noopener">KVR Audio, Tonalic Essential 번들 소식 (2026.06)</a></li>
+    <li><a href="https://www.editorskeys.com/blogs/news/cubase-keyboard-shortcuts-pdf-cheat-sheet" target="_blank" rel="noopener">Editors Keys, Cubase 15 기본 단축키 정리 (2026.09)</a></li>
+    <li><a href="https://www.steinberg.help/r/cubase-pro/15.0/en" target="_blank" rel="noopener">Steinberg, Cubase Pro 15 공식 매뉴얼</a></li>
+  </ol>
+</section>
+
+  </main>
+</div>
+
+<footer class="banner">
+  <div class="banner-in">
+    <div class="lanes" aria-hidden="true"><i class="m"></i><i></i><i class="m"></i><i class="m"></i><i></i><i class="s"></i><i class="s"></i><i></i><i class="s"></i><i></i><i class="m"></i><i class="m"></i><i class="m"></i><i></i><i class="s"></i><i class="s"></i></div>
+    <p class="foot-title">엠나인아카데미<br>수강생용 <span style="color:var(--sfx)">학습자료</span></p>
+    <p class="sub">수업 시간에 다 못 본 부분은 이 페이지에서 찾아보고, 막히는 건 다음 수업 때 화면에 열어 놓고 같이 봐요.</p>
+    <div class="meta"><span>Cubase Pro 15.0.30 · Nuendo 15.0.30 기준</span><span>2026.10.26 정리</span><span>수강생 내부 학습용</span><a href="#top" style="color:var(--band-ink)">↑ 맨 위로</a></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // ── 단축키 데이터: keys = 조합 배열들(또는), 각 조합은 '|'로 키 구분 ──
+  var U = true;
+  var SC = {
+    transport:[
+      ["재생 / 정지 토글",["Space"]],
+      ["재생 시작",["Enter"],"넘패드 Enter"],
+      ["정지",["Num 0"]],
+      ["녹음",["Num *"]],
+      ["사이클(루프) 켜기·끄기",["Num /"]],
+      ["프로젝트 처음으로",["Num ."]],
+      ["왼쪽 / 오른쪽 로케이터로 이동",["Num 1","Num 2"]],
+      ["선택 범위만 재생",["Alt|Space"]],
+      ["레트로스펙티브 MIDI 녹음",["Shift|Num *"],"녹음 안 걸고 친 연주를 되살림"],
+      ["메트로놈 켜기·끄기",["C"]],
+      ["녹음 대기(Record Enable)",["R"]],
+      ["펀치 인 / 펀치 아웃",["I","O"]],
+      ["선택 범위로 로케이터 설정",["P"],"P → Num / 순서면 바로 루프"],
+      ["앞으로 / 뒤로 감기",["Num +","Num -"]],
+      ["트랜스포트 패널",["F2"]]
+    ],
+    tools:[
+      ["오브젝트 선택",["1"]],["범위 선택(Range)",["2"]],["자르기(Split)",["3"]],["붙이기(Glue)",["4"]],
+      ["지우개(Erase)",["5"]],["줌",["6"]],["뮤트",["7"]],["그리기(Draw)",["8"]],["재생(Play)",["9"]],
+      ["드럼스틱",["0"],"드럼 에디터에서 사용"],
+      ["이전 툴 / 다음 툴",["F9","F10"]]
+    ],
+    edit:[
+      ["실행 취소 / 다시 실행",["Ctrl|Z","Ctrl|Shift|Z"]],
+      ["잘라내기 / 복사 / 붙여넣기",["Ctrl|X","Ctrl|C","Ctrl|V"]],
+      ["삭제",["Delete","Backspace"]],
+      ["복제(Duplicate)",["Ctrl|D"]],
+      ["반복(Repeat) 창",["Ctrl|K"]],
+      ["커서 위치에서 자르기",["Alt|X"]],
+      ["선택 범위 경계에서 자르기",["Shift|X"]],
+      ["이벤트 그룹 / 그룹 해제",["Ctrl|G","Ctrl|U"]],
+      ["전체 선택 / 선택 해제",["Ctrl|A","Ctrl|Shift|A"]],
+      ["커서 위치로 이동",["Ctrl|L"]],
+      ["이벤트 뮤트 / 뮤트 해제",["Shift|M","Shift|U"]],
+      ["잠금",["Ctrl|Shift|L"]],
+      ["스냅 켜기·끄기",["J"]],
+      ["자동 스크롤 켜기·끄기",["F"]],
+      ["솔로 / 뮤트(트랙)",["S","M"]],
+      ["퀀타이즈",["Q"]]
+    ],
+    zoom:[
+      ["줌 인 / 줌 아웃",["H","G"]],
+      ["세로 줌 인 / 아웃",["Shift|H","Shift|G"]],
+      ["트랙 높이 키우기 / 줄이기",["Ctrl|Down","Ctrl|Up"]],
+      ["선택한 부분에 맞춰 줌",["Alt|S"]],
+      ["이벤트에 맞춰 줌",["Shift|E"]],
+      ["전체 보기",["Shift|F"]],
+      ["이전 / 다음 이벤트로",["B","N"]],
+      ["선택 시작점으로",["L"]],
+      ["이전 / 다음 마커로",["Shift|B","Shift|N"]],
+      ["마커 추가",["Insert"],"Windows 전용 키. 맥은 마커 창을 쓰거나 키를 따로 지정"],
+      ["마커 1~9 지정",["Ctrl|1~9"]],
+      ["마커 1~9로 이동",["Shift|1~9"]],
+      ["시간 표시 형식 바꾸기",["."]]
+    ],
+    window:[
+      ["믹스콘솔",["F3"]],
+      ["오디오 커넥션",["F4"]],
+      ["오토메이션 패널",["F6"]],
+      ["다이렉트 오프라인 프로세싱",["F7"]],
+      ["비디오 플레이어",["F8"]],
+      ["VST 인스트루먼트",["F11"]],
+      ["오디오 퍼포먼스(CPU 부하)",["F12"]],
+      ["선택한 파트의 에디터 열기",["Return"]],
+      ["마커 창",["Ctrl|M"]],
+      ["템포 트랙 에디터",["Ctrl|T"]],
+      ["풀(Pool)",["Ctrl|P"]],
+      ["프로젝트 설정",["Shift|S"]],
+      ["온스크린 키보드",["Alt|K"]],
+      ["새 프로젝트 / 열기",["Ctrl|N","Ctrl|O"]],
+      ["저장 / 다른 이름으로 저장",["Ctrl|S","Ctrl|Shift|S"]],
+      ["새 버전으로 저장",["Ctrl|Alt|S"],"과제 버전 관리에 꼭 쓰세요"],
+      ["워크스페이스 1~9 불러오기",["Alt|Num 1~9"]],
+      ["새 워크스페이스",["Ctrl|Num 0"]]
+    ],
+    sfx:[
+      ["크로스페이드",["X"]],
+      ["페이드를 선택 범위에 맞추기",["A"]],
+      ["선택 왼쪽 끝을 커서로 / 오른쪽 끝을 커서로",["E","D"]],
+      ["겹친 이벤트를 맨 앞으로",["U"]],
+      ["커서 위치에서 자르기",["Alt|X"]],
+      ["범위 경계에서 자르기",["Shift|X"]],
+      ["무음 삽입",["Ctrl|Shift|E"]],
+      ["시간 삭제(뒤를 당김)",["Shift|Backspace"]],
+      ["시간 잘라내기 / 시간 붙여넣기",["Ctrl|Shift|X","Ctrl|Shift|V"]],
+      ["원래 위치에 붙여넣기",["Alt|V"]],
+      ["복제 / 반복",["Ctrl|D","Ctrl|K"]],
+      ["다이렉트 오프라인 프로세싱",["F7"]],
+      ["선택 범위만 재생",["Alt|Space"]],
+      ["이벤트에 맞춰 줌",["Shift|E"]],
+      ["오토메이션 쓰기(선택 트랙)",["W"]],
+      ["전체 트랙 오토메이션 읽기 / 쓰기",["Alt|R","Alt|W"]],
+      ["스템 분리",["—"],"기본 키 없음. 키 명령에서 직접 지정"]
+    ],
+    midi:[
+      ["에디터 열기(키 에디터)",["Return"]],
+      ["선택 노트 반음 위 / 아래",["Up","Down"],"키 에디터 안에서"],
+      ["선택 노트 옥타브 위 / 아래",["Shift|Up","Shift|Down"],"키 에디터 안에서"],
+      ["퀀타이즈",["Q"]],
+      ["그리기 툴",["8"]],
+      ["드럼스틱 툴",["0"]],
+      ["스코어 에디터",["Ctrl|R"]],
+      ["프로젝트 창에서 바로 편집(Edit In-Place)",["Ctrl|Shift|I"]],
+      ["온스크린 키보드",["Alt|K"]],
+      ["레트로스펙티브 MIDI 녹음",["Shift|Num *"]],
+      ["메트로놈",["C"]],
+      ["템포 트랙 에디터",["Ctrl|T"]],
+      ["템포 입력",["Shift|T"],null,U],
+      ["박자표 입력",["Shift|C"],null,U],
+      ["VST 인스트루먼트 창",["F11"]],
+      ["패턴 에디터 스텝 선택 툴에서 잠깐 그리기",["Alt"],"누르고 있는 동안만. 15.0.20부터"]
+    ]
+  };
+
+  var os = "win";
+  try{ var s = localStorage.getItem("m9os"); if(s==="mac"||s==="win") os = s; }catch(e){}
+
+  var MAC = {"Ctrl":"⌘ Cmd","Alt":"⌥ Opt","Shift":"⇧ Shift","Backspace":"Delete","Delete":"fn+Delete","Up":"↑","Down":"↓","Return":"Return","Enter":"Enter"};
+  var WIN = {"Up":"↑","Down":"↓"};
+  function lab(k){ var m = os==="mac"?MAC:WIN; return m[k]||k; }
+  function esc(t){ return String(t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
+  function combo(str){
+    if(str==="—") return '<span class="or">없음</span>';
+    return str.split("|").map(function(k){return "<kbd>"+esc(lab(k))+"</kbd>";}).join('<span class="plus">+</span>');
+  }
+  function plain(str){ return str.split("|").map(lab).join("+"); }
+  function render(){
+    document.querySelectorAll(".kt").forEach(function(box){
+      var rows = SC[box.dataset.set]||[];
+      var h = '<table><thead><tr><th>기능</th><th>단축키 ('+(os==="mac"?"macOS":"Windows")+')</th></tr></thead><tbody>';
+      rows.forEach(function(r,i){
+        var keys = r[1].map(combo).join('<span class="or">/</span>');
+        h += '<tr id="k-'+box.dataset.set+'-'+i+'"><td>'+esc(r[0])+(r[3]?' <span class="unsure">확실하지 않음</span>':'')+(r[2]?'<span class="sm">'+esc(r[2])+'</span>':'')+'</td><td class="k">'+keys+'</td></tr>';
+      });
+      box.innerHTML = h+"</tbody></table>";
+    });
+    document.querySelectorAll("kbd.k-ctrl").forEach(function(k){k.textContent=lab("Ctrl");});
+    document.querySelectorAll("kbd.k-alt").forEach(function(k){k.textContent=lab("Alt");});
+    document.querySelectorAll(".os button").forEach(function(b){b.setAttribute("aria-pressed", b.dataset.os===os?"true":"false");});
+  }
+  document.querySelectorAll(".os button").forEach(function(b){
+    b.addEventListener("click",function(){
+      os = b.dataset.os; try{localStorage.setItem("m9os",os);}catch(e){}
+      render(); buildIndex(); if(q.value.trim()) search();
+    });
+  });
+
+  // ── 목차 ──
+  var toc = document.getElementById("toc");
+  var PART = {common:"Part 0 · 공통",sfx:"Part A · SFX 사운드디자인",midi:"Part B · 미디 작곡"};
+  var secs = Array.prototype.slice.call(document.querySelectorAll("main .sec"));
+  var lastPart = null, html = "";
+  secs.forEach(function(sec){
+    var p = sec.dataset.part;
+    if(p!==lastPart && sec.id!=="sources"){ html += '<li class="part '+p+'"><a href="#'+(p)+'" style="padding:0;color:inherit;font-weight:700">'+PART[p]+'</a></li>'; lastPart = p; }
+    var h = sec.querySelector("h3"); var n = h.querySelector(".n").textContent;
+    var t = h.cloneNode(true); t.querySelectorAll(".n,.ed,.unsure").forEach(function(x){x.remove();});
+    sec.dataset.title = t.textContent.trim();
+    html += '<li><a href="#'+sec.id+'" data-id="'+sec.id+'"><span class="n">'+esc(n)+'</span><span>'+esc(sec.dataset.title)+'</span></a></li>';
+  });
+  toc.innerHTML = html;
+
+  // ── 서랍(모바일) ──
+  var side = document.getElementById("side"), ov = document.getElementById("overlay"), ob = document.getElementById("openSide");
+  function openSide(){ side.classList.add("open"); ov.classList.add("open"); ob.setAttribute("aria-expanded","true"); setTimeout(function(){q.focus();},50); }
+  function closeSide(){ side.classList.remove("open"); ov.classList.remove("open"); ob.setAttribute("aria-expanded","false"); }
+  ob.addEventListener("click",openSide); ov.addEventListener("click",closeSide);
+  document.getElementById("closeSide").addEventListener("click",closeSide);
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape") closeSide(); });
+  toc.addEventListener("click",function(e){ if(e.target.closest("a")) closeSide(); });
+
+  // ── 검색 ──
+  var q = document.getElementById("q"), res = document.getElementById("results"), clr = document.getElementById("clr");
+  var IDX = [];
+  function norm(t){ return String(t).toLowerCase().replace(/\s+/g,""); }
+  function buildIndex(){
+    IDX = [];
+    secs.forEach(function(sec){
+      IDX.push({type:"sec",id:sec.id,title:sec.dataset.title,num:sec.querySelector("h3 .n").textContent,part:sec.dataset.part,text:sec.textContent.replace(/\s+/g," ")});
+    });
+    Object.keys(SC).forEach(function(set){
+      var box = document.querySelector('.kt[data-set="'+set+'"]'); var sec = box.closest(".sec");
+      SC[set].forEach(function(r,i){
+        var keys = r[1].map(plain).join(" / ");
+        var alt = r[1].map(function(s){return s.replace(/\|/g,"+");}).join(" ");
+        IDX.push({type:"key",id:"k-"+set+"-"+i,title:r[0],keys:keys,where:sec.dataset.title,part:sec.dataset.part,text:r[0]+" "+keys+" "+alt+" "+(r[2]||"")});
+      });
+    });
+  }
+  function hl(text,query){
+    var t = esc(text); var words = query.trim().split(/\s+/).filter(Boolean);
+    words.forEach(function(w){ var re = new RegExp("("+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","ig"); t = t.replace(re,"<mark>$1</mark>"); });
+    return t;
+  }
+  function snippet(text,query){
+    var w = query.trim().split(/\s+/)[0]; var i = text.toLowerCase().indexOf(w.toLowerCase());
+    if(i<0) return text.slice(0,80)+"…";
+    var a = Math.max(0,i-30); return (a>0?"…":"")+text.slice(a,i+60)+"…";
+  }
+  function search(){
+    var raw = q.value; var nq = norm(raw); clr.hidden = !raw;
+    if(!nq){ res.hidden = true; toc.hidden = false; return; }
+    var words = raw.trim().toLowerCase().split(/\s+/).map(norm);
+    var hits = IDX.filter(function(e){ var n = norm(e.text+" "+e.title); return words.every(function(w){return n.indexOf(w)>=0;}); });
+    hits.sort(function(a,b){
+      var at = norm(a.title).indexOf(nq)>=0?0:1, bt = norm(b.title).indexOf(nq)>=0?0:1;
+      if(at!==bt) return at-bt; if(a.type!==b.type) return a.type==="sec"?-1:1; return 0;
+    });
+    var PL = {common:"공통",sfx:"SFX",midi:"MIDI"};
+    var h = '<div class="cnt">“'+esc(raw.trim())+'” 검색 결과 '+hits.length+'건</div>';
+    if(!hits.length) h += '<div class="empty">찾는 내용이 없어요. 다른 말(영문 기능 이름, 키 이름)로도 검색해 보세요.</div>';
+    hits.slice(0,40).forEach(function(e){
+      if(e.type==="sec") h += '<button class="res" data-go="'+e.id+'"><div class="rt"><span class="rp">'+PL[e.part]+' '+esc(e.num)+'</span>'+hl(e.title,raw)+'</div><div class="rs">'+hl(snippet(e.text,raw),raw)+'</div></button>';
+      else h += '<button class="res" data-go="'+e.id+'"><div class="rt"><span class="rp">단축키</span>'+hl(e.title,raw)+'</div><div class="rs">'+hl(e.keys,raw)+' · '+esc(e.where)+'</div></button>';
+    });
+    res.innerHTML = h; res.hidden = false; toc.hidden = true;
+  }
+  var tmr; q.addEventListener("input",function(){ clearTimeout(tmr); tmr = setTimeout(search,120); });
+  clr.addEventListener("click",function(){ q.value=""; search(); q.focus(); });
+  res.addEventListener("click",function(e){
+    var b = e.target.closest("[data-go]"); if(!b) return;
+    var el = document.getElementById(b.dataset.go); if(!el) return;
+    closeSide(); el.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:el.tagName==="TR"?"center":"start"});
+    el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+  });
+
+  // ── 현재 위치 표시 ──
+  var links = {}; toc.querySelectorAll("a[data-id]").forEach(function(a){links[a.dataset.id]=a;});
+  var mt = document.getElementById("mbarTitle");
+  if("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(ents){
+      ents.forEach(function(en){
+        if(en.isIntersecting){
+          var id = en.target.id; Object.keys(links).forEach(function(k){links[k].classList.toggle("on",k===id);});
+          mt.textContent = en.target.querySelector("h3 .n").textContent+" "+en.target.dataset.title;
+        }
+      });
+    },{rootMargin:"-15% 0px -75% 0px"});
+    secs.forEach(function(s){io.observe(s);});
+  }
+
+  render(); buildIndex();
+  if(location.hash){ var t = document.getElementById(location.hash.slice(1)); if(t) setTimeout(function(){t.scrollIntoView();},60); }
+})();
+</script>
+
+</body>
+</html>
